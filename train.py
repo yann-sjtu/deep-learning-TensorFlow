@@ -52,15 +52,15 @@ def train():
         sess.run(tf.global_variables_initializer())
         train_arr, train_label = load_train_img()
         print('img loaded!')
-        merged = tf.summary.merge_all()
+        #merged = tf.summary.merge_all()
         # 选定可视化存储目录
-        writer = tf.summary.FileWriter("/home/yxq/tensorboard", sess.graph)
+        #writer = tf.summary.FileWriter("/home/yxq/tensorboard", sess.graph)
         for p in range(TRAINING_STEPS):
             for q in range(300*96//BATCH_SIZE):
                 _, loss_value, step = sess.run([train_step, loss, global_step], feed_dict={x_holder: train_arr[q*BATCH_SIZE:(q+1)*BATCH_SIZE,:,:,:], y_holder: train_label[q*BATCH_SIZE:(q+1)*BATCH_SIZE,:]})
             print("Round %d, after %d training step(s), loss on training batch is %g." % (p+1, step, loss_value))
-            merged_result = sess.run(merged)  # merged也是需要run的
-            writer.add_summary(merged_result, p)
+            #merged_result = sess.run(merged)  # merged也是需要run的
+            #writer.add_summary(merged_result, p)
         saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME))
 
 if __name__ == '__main__':
