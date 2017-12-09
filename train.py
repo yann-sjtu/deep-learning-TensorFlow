@@ -9,7 +9,7 @@ LEARNING_RATE_BASE = 0.0001
 LEARNING_RATE_DECAY = 0.98
 REGULARIZATION_RATE = 0.01  #lambda
 KEEP_PROB = 0.5
-TRAINING_STEPS = 2000
+TRAINING_STEPS = 300
 
 MODEL_SAVE_PATH="/home/yxq/vgg19new/vgg19model"
 MODEL_NAME="level_1000_lambda1e-2.ckpt"
@@ -31,11 +31,17 @@ def train():
     y_holder = tf.placeholder(tf.float32, [BATCH_SIZE, 3], name='y-input')
 
     regularizer = tf.contrib.layers.l2_regularizer(REGULARIZATION_RATE)
-    y_train = vgg19_model.fcResult(x_holder, regularizer, KEEP_PROB)
+    y_train, params = vgg19_model.fcResult(x_holder, regularizer, KEEP_PROB)
     
     cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y_train, labels=y_holder)
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
     loss = cross_entropy_mean + tf.add_n(tf.get_collection('losses'))
+    tf.summary.histogram('fc6/weights', params[0])
+    tf.summary.histogram('fc6/biases', params[1])
+    tf.summary.histogram('fc7/weights', params[2]) 
+    tf.summary.histogram('fc7/biases', params[3])
+    tf.summary.histogram('fc8/weights', params[4])
+    tf.summary.histogram('fc8/biases', params[5])
     tf.summary.scalar('loss', loss)  #用于tensorboard
 
     learning_rate = tf.train.exponential_decay(
@@ -52,9 +58,9 @@ def train():
         sess.run(tf.global_variables_initializer())
         train_arr, train_label = load_train_img()
         print('img loaded!')
-        #merged = tf.summary.merge_all()
+        merged = tf.summary.merge_all()
         # 选定可视化存储目录
-        #writer = tf.summary.FileWriter("/home/yxq/tensorboard", sess.graph)
+        writer = tf.summary.FileWriter("/home/yxq/tensorboard", sess.graph)
         for p in range(TRAINING_STEPS):
             for q in range(300*96//BATCH_SIZE):
                 _, loss_value, step = sess.run([train_step, loss, global_step], feed_dict={x_holder: train_arr[q*BATCH_SIZE:(q+1)*BATCH_SIZE,:,:,:], y_holder: train_label[q*BATCH_SIZE:(q+1)*BATCH_SIZE,:]})
