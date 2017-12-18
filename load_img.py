@@ -5,6 +5,7 @@ import scipy.io as sio
 ad_path = '/home/yxq/MRI_IMAGE/AD_MRI'
 mci_path = '/home/yxq/MRI_IMAGE/MCI_MRI'
 nc_path = '/home/yxq/MRI_IMAGE/NC_MRI'
+print("start")
 
 def load_img():
     img_arr = np.zeros([170*3, 256, 256, 166])
@@ -18,7 +19,7 @@ def load_img():
     for matfile in os.listdir(nc_path)[:170]:
         img_arr[n, :, :, :] = sio.loadmat(matfile)['Y']
         n += 1
-    
+    print("load over")
     trainImageArray = np.zeros(120*3, 256, 256, 166)
     testImageArray = np.zeros(50*3, 256, 256, 166)
 
