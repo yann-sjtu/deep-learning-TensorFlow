@@ -44,12 +44,10 @@ def fcLayer(x, inputD, outputD, reluFlag, regularizer, name):
         tf.add_to_collection('losses', regularizer(w))
         b = tf.get_variable("b", [outputD], initializer = tf.constant_initializer(0.1))  
         out = tf.nn.xw_plus_b(x, w, b, name = scope.name)
-        tf.summary.histogram(name + "/weights", w)  #用于tensorboard
-        tf.summary.histogram(name + "/bias", b)     #用于tensorboard
         if reluFlag:  
-            return tf.nn.relu(out)  
+            return tf.nn.relu(out), w, b
         else:  
-            return out
+            return out, w, b
         
   
 def convResult(x_input, ksize, stride, pool_size, pool_stride, keep_prob = KEEP_PROB, class_num = CLASS_NUM):
@@ -92,14 +90,15 @@ def fcResult(conv_out, regularizer, keep_prob = KEEP_PROB, class_num = CLASS_NUM
     nodes = fc_shape[1] * fc_shape[2] * fc_shape[3]
     fc_in = tf.reshape(conv6, [fc_shape[0], nodes])
 
-    fc6 = fcLayer(fc_in, nodes, FC1_SIZE, True, regularizer, "fc6")  
+    fc6, w6, b6 = fcLayer(fc_in, nodes, FC1_SIZE, True, regularizer, "fc6")
 
-    fc7 = fcLayer(fc6, FC1_SIZE, FC2_SIZE, True, regularizer, "fc7")  
+    fc7, w7, b7 = fcLayer(fc6, FC1_SIZE, FC2_SIZE, True, regularizer, "fc7")
     dropout2 = dropout(fc7, keep_prob)  
   
-    fc8 = fcLayer(dropout2, FC2_SIZE, class_num, False, regularizer, "fc8")
+    fc8, w8, b8 = fcLayer(dropout2, FC2_SIZE, class_num, False, regularizer, "fc8")
+    params=[w6, b6, w7, b7, w8, b8]
 
-    return fc8
+    return fc8, params
 
 def tailResult(tail_input, regularizer, keep_prob=KEEP_PROB):
     
