@@ -5,7 +5,6 @@ import scipy.io as sio
 ad_path = '/home/yxq/MRI_IMAGE/AD_MRI'
 mci_path = '/home/yxq/MRI_IMAGE/MCI_MRI'
 nc_path = '/home/yxq/MRI_IMAGE/NC_MRI'
-print("start")
 
 def load_img():
     img_arr = np.zeros([170*3, 256, 256, 166])
@@ -32,4 +31,7 @@ def load_img():
     testImageArray[100:150, :, :, :] = img_arr[460:510, :, :, :]
     np.save('/home/yxq/MRI_IMAGE/trainMRI.npy', trainImageArray)
     np.save('/home/yxq/MRI_IMAGE/testMRI.npy', testImageArray)
+
+if __name__ == '__main__':
+    load_img()
     
