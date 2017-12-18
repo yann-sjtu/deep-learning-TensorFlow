@@ -10,6 +10,7 @@ print("start")
 def load_img():
     img_arr = np.zeros([170*3, 256, 256, 166])
     n = 0
+    print('start')
     for matfile in os.listdir(ad_path)[:170]:
         img_arr[n, :, :, :] = sio.loadmat(matfile)['Y']
         n += 1
